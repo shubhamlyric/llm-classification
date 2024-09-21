@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "llm-classification"
+version = "0.1.0"
+description = ""
+authors = ["shubhamlyric <shubham@lyric.tech>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pandas = "^2.2.3"
+pydantic = "^2.9.2"
+langchain = "^0.3.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

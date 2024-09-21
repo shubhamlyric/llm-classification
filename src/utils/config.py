@@ -13,6 +13,17 @@ PARAMETERS = Parameters(
     target_column="target"
 )
 
-def load_config(config_path: str):
-    # Implement config loading logic here if needed
-    pass
+NEW_DATA = InputData(
+    input_file="new_data.csv"
+)
+
+# Additional configurations
+CONFIGS = {
+    "batch_size": 32,
+    "max_tokens": 150,
+    "temperature": 0,
+    # Add any other configuration parameters here
+}
+
+def get_config():
+    return CONFIGS

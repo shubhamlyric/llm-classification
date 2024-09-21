@@ -1,20 +1,20 @@
-from src.utils.config import INPUT_DATA, PARAMETERS, NEW_DATA, load_config
+from src.utils.config import INPUT_DATA, PARAMETERS, NEW_DATA, get_config
 from src.retrieval.llm_retrieval import setup_retrieval_and_prediction
-from vector_store import VectorStore
+from src.data_processing.data_processing import process_data
 import polars as pl
 
 def run(input_data, new_data, parameters, configs):
-    # Initialize the vector store
-    vs = VectorStore(
-        db_type=parameters.db_type,
-        embedding_type=parameters.embedding_type
-    )
+    # Process the input data
+    processed_data = process_data(input_data.input_file)
     
     # Set up the retrieval tool, LLM, prompt template, agent, and prediction function
-    llm, search_tool, prompt_template, agent, predict_func = setup_retrieval_and_prediction(vs, parameters)
+    llm, search_tool, prompt_template, agent, predict_func = setup_retrieval_and_prediction(processed_data, parameters)
     
-    # Process the new data and make predictions
-    predictions = predict_func(new_data, agent, prompt_template, parameters)
+    # Process the new data
+    processed_new_data = process_data(new_data.input_file)
+    
+    # Make predictions on the processed new data
+    predictions = predict_func(processed_new_data, agent, prompt_template, parameters)
     
     # Convert predictions to a Polars DataFrame
     predictions_df = pl.DataFrame(predictions)
@@ -25,7 +25,7 @@ def run(input_data, new_data, parameters, configs):
     }
 
 if __name__ == "__main__":
-    configs = load_config('config.json')
-    new_data = pl.read_csv(NEW_DATA.input_file)  # Assuming NEW_DATA is defined in config.py
+    configs = get_config()
+    new_data = pl.read_csv(NEW_DATA.input_file)
     output = run(INPUT_DATA, new_data, PARAMETERS, configs)
     print(output["predictions"])

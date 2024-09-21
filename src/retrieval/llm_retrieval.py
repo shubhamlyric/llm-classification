@@ -1,7 +1,6 @@
 from langchain.agents import Tool, initialize_agent
 from langchain.llms import OpenAI, HuggingFacePipeline
 from langchain.prompts import PromptTemplate
-from langchain.chat_models import ChatAnthropic, ChatOpenAI
 from transformers import pipeline
 from src.utils.config import Parameters
 import polars as pl
@@ -21,7 +20,7 @@ def create_search_tool(vectorstore, dataset_name):
     )
 
 def get_llm(parameters: Parameters):
-    if parameters.model_name.lower().startswith("gpt-3.5") or parameters.model_name.lower().startswith("gpt-4"):
+    if parameters.model_name.lower().startswith("gpt") or parameters.model_name.lower().startswith("gpt-4"):
         return OpenAI(
             model_name=parameters.model_name,
             temperature=0,
@@ -34,7 +33,7 @@ def get_llm(parameters: Parameters):
             temperature=0,
             max_tokens=150
         )
-    elif parameters.model_name.lower().startswith("huggingface/"):
+    else:
         model_name = parameters.model_name.split("/", 1)[1]
         hf_pipeline = pipeline(
             "text-generation",
@@ -42,8 +41,7 @@ def get_llm(parameters: Parameters):
             device="cuda" if torch.cuda.is_available() else "cpu"
         )
         return HuggingFacePipeline(pipeline=hf_pipeline)
-    else:
-        raise ValueError(f"Unsupported model: {parameters.model_name}")
+
 
 def create_prompt_template(dataset_name: str):
     return PromptTemplate(

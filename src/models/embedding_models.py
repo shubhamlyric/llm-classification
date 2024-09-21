@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import openai
 from sentence_transformers import SentenceTransformer
 import anthropic
-from langchain.embeddings import OpenAIEmbeddings
+from langchain_community.embeddings import OpenAIEmbeddings
 import os
 # Import other necessary libraries for different models
 
@@ -12,7 +12,7 @@ class EmbeddingModel(ABC):
         pass
 
 class OpenAIEmbedding(EmbeddingModel):
-    def __init__(self, api_key, model="text-embedding-3-large"):
+    def __init__(self, api_key= 'apikey', model="text-embedding-3-large"):
         os.environ["OPENAI_API_KEY"] = api_key
         self.embeddings = OpenAIEmbeddings(model=model)
 
@@ -42,11 +42,10 @@ class ClaudeEmbedding(EmbeddingModel):
         return embeddings
 
 def get_embedding_model(model_type='openai', **kwargs):
-    if model_type == 'openai':
+
+    if model_type.lower().startswith("gpt"):
         return OpenAIEmbedding(**kwargs)
-    elif model_type == 'huggingface':
-        return HuggingFaceEmbedding(**kwargs)
-    elif model_type == 'claude':
+    elif model_type.lower().startswith("claude"):
         return ClaudeEmbedding(**kwargs)
     else:
-        raise ValueError(f"Unsupported model type: {model_type}")
+        return HuggingFaceEmbedding(**kwargs)

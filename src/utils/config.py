@@ -2,15 +2,15 @@ from src.utils.data_models import InputData, Parameters
 
 # Define your input data and parameters here
 INPUT_DATA = InputData(
-    input_file="large_input.csv"
+    input_file="train.csv"
 )
 
 PARAMETERS = Parameters(
-    model_name="gpt-3.5-turbo",
+    model_name="meta-llama/Llama-2-7b-hf",
     db_type="pinecone",
     embedding_type="openai",
-    dataset_name="large_input",
-    target_column="target"
+    dataset_name="titanic_passenger_survival",
+    target_column="Survived"
 )
 
 NEW_DATA = InputData(

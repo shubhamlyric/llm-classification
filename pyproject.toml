@@ -15,6 +15,16 @@ sentence-transformers = "^3.1.1"
 anthropic = "^0.34.2"
 openai = "^1.47.0"
 polars = "^1.7.1"
+langchain-community = "^0.3.0"
+tiktoken = "^0.7.0"
+python-dotenv = "^1.0.1"
+google = "^3.0.0"
+google-auth = "^2.35.0"
+google-api-python-client = "^2.146.0"
+protobuf = "^5.28.2"
+grpcio = "^1.66.1"
+grpcio-tools = "^1.66.1"
+protoc-gen-openapiv2 = "^0.0.1"
 
 
 [build-system]

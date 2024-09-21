@@ -63,7 +63,7 @@ def vectorize_data(df: pl.DataFrame, feature_columns: List[str], embedding_model
 
     text_data = df["text_description"].to_list()
     print('text_data', text_data)
-    1/0
+
     # Use the specified embedding model to create embeddings
     model = get_embedding_model(model_type=embedding_model, **kwargs)
     embeddings = model.get_embeddings(text_data)

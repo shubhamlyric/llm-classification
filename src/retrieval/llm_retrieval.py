@@ -1,10 +1,13 @@
 from langchain.agents import Tool, initialize_agent
-from langchain.llms import OpenAI
+from langchain.llms import OpenAI, HuggingFacePipeline
 from langchain.prompts import PromptTemplate
+from langchain.chat_models import ChatAnthropic, ChatOpenAI
+from transformers import pipeline
 from src.utils.config import Parameters
 import polars as pl
 from typing import List, Dict
 from collections import Counter
+import torch
 
 def create_search_tool(vectorstore, dataset_name):
     def retrieve_similar_items(query, k=5):
@@ -18,13 +21,27 @@ def create_search_tool(vectorstore, dataset_name):
     )
 
 def get_llm(parameters: Parameters):
-    if parameters.model_name.lower() == "gpt-3.5-turbo":
+    if parameters.model_name.lower().startswith("gpt-3.5") or parameters.model_name.lower().startswith("gpt-4"):
         return OpenAI(
             model_name=parameters.model_name,
             temperature=0,
             max_tokens=150
         )
-    # Add more conditions here for other model types
+    elif parameters.model_name.lower().startswith("claude"):
+        from langchain.llms import Anthropic
+        return Anthropic(
+            model=parameters.model_name,
+            temperature=0,
+            max_tokens=150
+        )
+    elif parameters.model_name.lower().startswith("huggingface/"):
+        model_name = parameters.model_name.split("/", 1)[1]
+        hf_pipeline = pipeline(
+            "text-generation",
+            model=model_name,
+            device="cuda" if torch.cuda.is_available() else "cpu"
+        )
+        return HuggingFacePipeline(pipeline=hf_pipeline)
     else:
         raise ValueError(f"Unsupported model: {parameters.model_name}")
 

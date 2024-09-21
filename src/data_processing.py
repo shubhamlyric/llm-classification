@@ -5,6 +5,7 @@ from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.impute import SimpleImputer
 import pinecone
 from models import get_embedding_model  # Import the get_embedding_model function
+from langchain.vectorstores import Pinecone as PineconeVectorStore
 
 def preprocess_data(df: pl.DataFrame, feature_columns: List[str]) -> pl.DataFrame:
     # Handle missing values
@@ -32,18 +33,20 @@ def preprocess_data(df: pl.DataFrame, feature_columns: List[str]) -> pl.DataFram
     
     return df
 
+def create_text_description(row: pl.Series, feature_columns: List[str]) -> str:
+    return ", ".join([f"{col}={row[col]}" for col in feature_columns])
+
 def vectorize_data(df: pl.DataFrame, feature_columns: List[str], embedding_model: str, **kwargs) -> np.ndarray:
-    # Convert dataframe to string representation
-    text_data = df.select(feature_columns).to_numpy().astype(str)
-    text_data = [' '.join(row) for row in text_data]
+    # Create text descriptions
+    text_data = df.select(feature_columns).apply(lambda row: create_text_description(row, feature_columns))
     
     # Use the specified embedding model to create embeddings
     model = get_embedding_model(model_type=embedding_model, **kwargs)
-    embeddings = model.get_embeddings(text_data)
+    embeddings = model.get_embeddings(text_data.to_list())
     
     return np.array(embeddings)
 
-def store_in_pinecone(embeddings: np.ndarray, ids: List[str], index_name: str):
+def store_in_pinecone(df: pl.DataFrame, embeddings: np.ndarray, feature_columns: List[str], index_name: str):
     # Initialize Pinecone
     pinecone.init(api_key="b709e216-9b1c-455b-997d-525349516113",
                   environment="YOUR_ENVIRONMENT")
@@ -53,10 +56,23 @@ def store_in_pinecone(embeddings: np.ndarray, ids: List[str], index_name: str):
         pinecone.create_index(index_name, dimension=embeddings.shape[1])
     
     index = pinecone.Index(index_name)
-    
-    # Upsert vectors to Pinecone
-    vectors = list(zip(ids, embeddings.tolist()))
-    index.upsert(vectors=vectors)
+
+    # Prepare metadata
+    metadata = df.select(feature_columns).apply(
+        lambda row: {
+            'text': create_text_description(row, feature_columns),
+            **{col: str(row[col]) for col in feature_columns}
+        }
+    ).to_list()
+
+    # Upsert data into Pinecone
+    vectors = zip(
+        [f"id_{i}" for i in range(len(df))],
+        embeddings.tolist(),
+        metadata
+    )
+
+    index.upsert(vectors=list(vectors))
 
 def process_data(
     input_file: str,
@@ -82,7 +98,7 @@ def process_data(
         ids = [f"id_{i+processed_rows}" for i in range(len(processed_chunk))]
         
         # Store in Pinecone
-        store_in_pinecone(embeddings, ids, index_name)
+        store_in_pinecone(processed_chunk, embeddings, feature_columns, index_name)
         
         processed_rows += len(processed_chunk)
         print(f"Processed and stored {processed_rows} rows so far...")

@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 import openai
 from sentence_transformers import SentenceTransformer
 import anthropic
+from langchain.embeddings import OpenAIEmbeddings
+import os
 # Import other necessary libraries for different models
 
 class EmbeddingModel(ABC):
@@ -10,13 +12,12 @@ class EmbeddingModel(ABC):
         pass
 
 class OpenAIEmbedding(EmbeddingModel):
-    def __init__(self, api_key, model="text-embedding-ada-002"):
-        openai.api_key = api_key
-        self.model = model
+    def __init__(self, api_key, model="text-embedding-3-large"):
+        os.environ["OPENAI_API_KEY"] = api_key
+        self.embeddings = OpenAIEmbeddings(model=model)
 
     def get_embeddings(self, texts):
-        response = openai.Embedding.create(input=texts, model=self.model)
-        return [embedding.embedding for embedding in response.data]
+        return self.embeddings.embed_documents(texts)
 
 class HuggingFaceEmbedding(EmbeddingModel):
     def __init__(self, model_name='all-MiniLM-L6-v2'):

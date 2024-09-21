@@ -50,16 +50,20 @@ def vectorize_data(df: pl.DataFrame, feature_columns: List[str], embedding_model
     # Create text descriptions from feature columns
     print('type of df', type(df))
 
+    # Create the text description using all feature columns
+    text_expr = pl.concat_str([
+        pl.lit(f"{col}="),
+        pl.col(col).cast(pl.Utf8),
+        pl.lit(", ")
+    ] for col in feature_columns).arr.join("")
+
     df = df.with_columns(
-        pl.format(
-            "Passenger: Age={}, Sex={}, Class={}, Fare={}",
-            pl.col('Age'),
-            pl.col('Sex'),
-            pl.col('Pclass'),
-            pl.col('Fare')
-        ).alias('text_description')
+        text_expr.alias('text_description')
     )
+
     text_data = df["text_description"].to_list()
+    print('text_data', text_data)
+    1/0
     # Use the specified embedding model to create embeddings
     model = get_embedding_model(model_type=embedding_model, **kwargs)
     embeddings = model.get_embeddings(text_data)

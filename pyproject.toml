@@ -25,6 +25,7 @@ protobuf = "^5.28.2"
 grpcio = "^1.66.1"
 grpcio-tools = "^1.66.1"
 protoc-gen-openapiv2 = "^0.0.1"
+pinecone = "^5.3.1"
 
 
 [build-system]

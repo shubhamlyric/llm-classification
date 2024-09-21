@@ -9,7 +9,7 @@ PARAMETERS = Parameters(
     model_name="meta-llama/Llama-2-7b-hf",
     db_type="pinecone",
     embedding_type="openai",
-    dataset_name="titanic_passenger_survival",
+    dataset_name="titanic-passenger-survival",
     target_column="Survived"
 )
 

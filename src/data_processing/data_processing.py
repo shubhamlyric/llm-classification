@@ -8,7 +8,8 @@ from pinecone import Pinecone, ServerlessSpec
 from src.models.embedding_models import get_embedding_model  # Import the get_embedding_model function
 # from langchain.vectorstores import Pinecone as PineconeVectorStore
 # from langchain_community.vectorstores import Pinecone
-from pinecone.grpc import PineconeGRPC as Pinecone
+# from pinecone.grpc import PineconeGRPC as Pinecone
+from pinecone import Pinecone, ServerlessSpec
 
 from dotenv import load_dotenv
 
@@ -78,8 +79,8 @@ def initialize_pinecone_index(index_name, dimension=1536, metric='cosine'):
             dimension=dimension,
             metric=metric,
             spec=ServerlessSpec(
-                cloud='aws',
-                region='us-west-2'
+                cloud='gcp',
+                region=os.getenv("PINECONE_ENVIRONMENT")
             )
         )
         print(f"Created new Pinecone index: {index_name}")

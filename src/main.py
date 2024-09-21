@@ -2,7 +2,7 @@ from vector_store import VectorStore
 import json
 from typing import Dict, Any, List, Optional
 from pydantic import BaseModel, Field
-import pandas as pd
+
 
 class InputData(BaseModel):
     input_file: str
@@ -40,40 +40,12 @@ def run(inputs: InputData, parameters: Parameters, configs: Dict[str, Any]) -> O
         embedding_type=parameters.embedding_type
     )
     
-    # Process the CSV file in batches
+    # Placeholder for processing logic (to be implemented in separate files)
     processed_rows = 0
     vector_ids = []
     
-    for chunk in pd.read_csv(inputs.input_file, chunksize=configs['processing']['batch_size']):
-        # Combine text columns
-        texts = chunk[inputs.text_columns].apply(lambda row: ' '.join(row.values.astype(str)), axis=1)
-        
-        # Prepare metadata
-        if inputs.metadata_columns:
-            metadata = chunk[inputs.metadata_columns].to_dict('records')
-        else:
-            metadata = None
-        
-        # Process and add texts to the vector store
-        for i, text in enumerate(texts):
-            # Simple chunking (you might want to implement more sophisticated chunking)
-            chunks = [text[i:i+configs['processing']['chunk_size']] for i in range(0, len(text), configs['processing']['chunk_size']-configs['processing']['overlap'])]
-            
-            # Add chunks to vector store
-            ids = vs.add_texts(chunks, metadatas=[metadata[i] if metadata else None] * len(chunks))
-            vector_ids.extend(ids)
-        
-        processed_rows += len(chunk)
-        print(f"Processed {processed_rows} rows so far...")
-    
-    print(f"Finished processing {processed_rows} rows.")
-    
-    # Perform a sample similarity search
-    if vector_ids:
-        sample_text = vs.similarity_search(vector_ids[0], k=configs['processing']['top_k'])
-        sample_similarity_scores = [score for _, score in sample_text if score >= configs['processing']['similarity_threshold']]
-    else:
-        sample_similarity_scores = None
+    # Placeholder for sample similarity search
+    sample_similarity_scores = None
     
     return OutputData(
         processed_rows=processed_rows,

@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     Global Configs
     """
 
-    log_level = "INFO"
+    log_level: str = "INFO"
 
     class Config:
         """
@@ -28,7 +28,7 @@ class Parameters(BaseModel):
     Parameters
     """
 
-    model_name: str
+    llm_model_name: str
     db_type: str
     embedding_type: str
     dataset_name: str

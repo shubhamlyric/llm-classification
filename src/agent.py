@@ -29,15 +29,15 @@ def get_llm(parameters: Parameters):
     """
     Get the LLM model
     """
-    if parameters.model_name.lower() in OPENAI_MODELS:
+    if parameters.llm_model_name.lower() in OPENAI_MODELS:
         return OpenAI(
-            model_name=parameters.model_name,
+            llm_model_name=parameters.llm_model_name,
             temperature=parameters.temperature,
             max_tokens=parameters.max_tokens,
         )
-    elif parameters.model_name.lower().startswith("claude"):
+    elif parameters.llm_model_name.lower().startswith("claude"):
         return AnthropicLLM(
-            model=parameters.model_name,
+            model=parameters.llm_model_name,
             temperature=parameters.temperature,
             max_tokens=parameters.max_tokens,
         )

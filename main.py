@@ -43,4 +43,18 @@ def run(inputs, parameters, configs):
 
 
 if __name__ == "__main__":
-    pass
+    parameters = Parameters(
+        llm_model_name="gpt-4",
+        db_type="faiss",
+        embedding_type="sentence-transformers/paraphrase-MiniLM-L6-v2",
+        dataset_name="example",
+        target_column="text",
+        temperature=0.8,
+        max_tokens=8192,
+    )
+
+    inputs = {"historic": pl.read_csv("data/historic.csv").to_dict()}
+    outputs = run(inputs=inputs, parameters=parameters.dict(), configs={})
+
+    for key, value in outputs.items():
+        pl.write_csv(value, f"data/{key}.csv")

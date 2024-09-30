@@ -6,7 +6,7 @@ authors = ["shubhamlyric <shubham@lyric.tech>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = ">=3.10,<3.13"
 pydantic = "^2.9.2"
 langchain = "^0.3.0"
 scikit-learn = "^1.5.2"
@@ -14,7 +14,6 @@ pinecone-client = "^5.0.1"
 sentence-transformers = "^3.1.1"
 anthropic = "^0.34.2"
 openai = "^1.47.0"
-polars = "^1.7.1"
 langchain-community = "^0.3.0"
 tiktoken = "^0.7.0"
 python-dotenv = "^1.0.1"
@@ -26,6 +25,16 @@ grpcio = "^1.66.1"
 grpcio-tools = "^1.66.1"
 protoc-gen-openapiv2 = "^0.0.1"
 pinecone = "^5.3.1"
+langchain-chroma = "^0.1.4"
+langchain-pinecone = "^0.2.0"
+faiss-cpu = "^1.8.0.post1"
+langchain-openai = "^0.2.1"
+langchain-huggingface = "^0.1.0"
+langchain-voyageai = "^0.1.2"
+langchain-anthropic = "^0.2.1"
+langsmith = "^0.1.129"
+langgraph = "^0.2.28"
+polars = "<0.19"
 
 
 [build-system]

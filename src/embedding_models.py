@@ -23,4 +23,4 @@ def get_embedding_model(llm_model_name: str = None, model_type="openai", **kwarg
         return ChatAnthropic(model=llm_model_name, **kwargs)
     else:
         llm_model_name = llm_model_name or "all-MiniLM-L6-v2"
-        return HuggingFaceEmbeddings(llm_model_name=llm_model_name, **kwargs)
+        return HuggingFaceEmbeddings(model_name=llm_model_name, **kwargs)

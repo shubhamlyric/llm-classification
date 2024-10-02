@@ -31,7 +31,7 @@ def get_llm(parameters: Parameters):
     """
     if parameters.llm_model_name.lower() in OPENAI_MODELS:
         return OpenAI(
-            llm_model_name=parameters.llm_model_name,
+            model=parameters.llm_model_name,
             temperature=parameters.temperature,
             max_tokens=parameters.max_tokens,
         )

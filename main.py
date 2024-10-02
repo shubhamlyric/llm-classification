@@ -44,16 +44,19 @@ def run(inputs, parameters, configs):
 
 if __name__ == "__main__":
     parameters = Parameters(
-        llm_model_name="gpt-4",
+        llm_model_name="gpt-4o-mini",
         db_type="faiss",
-        embedding_type="sentence-transformers/paraphrase-MiniLM-L6-v2",
-        dataset_name="example",
-        target_column="text",
+        embedding_type="huggingface",
+        dataset_name="titanic",
+        target_column="Embarked",
         temperature=0.8,
         max_tokens=8192,
     )
 
-    inputs = {"historic": pl.read_csv("data/historic.csv").to_dict()}
+    inputs = {
+        "historic": pl.read_csv("data/train.csv"),
+        "features": pl.read_csv("data/test.csv"),
+    }
     outputs = run(inputs=inputs, parameters=parameters.dict(), configs={})
 
     for key, value in outputs.items():

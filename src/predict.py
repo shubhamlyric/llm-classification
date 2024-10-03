@@ -2,6 +2,7 @@
 
 from collections import Counter
 import polars as pl
+import numpy as np
 from src.configs import Parameters
 from src.storage.faiss import FaissStorage
 

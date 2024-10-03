@@ -28,7 +28,7 @@ class Parameters(BaseModel):
     Parameters
     """
 
-    llm_model_name: str
+    model_name: str
     db_type: str
     embedding_type: str
     dataset_name: str

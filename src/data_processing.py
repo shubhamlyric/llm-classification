@@ -62,8 +62,7 @@ def preprocess_data(df: pl.DataFrame, target_column: str = None) -> pl.DataFrame
 
     # Normalize numerical features
     numerical_columns = [
-        col
-        for col in feature_columns
+        col for col in feature_columns
         if df[col].dtype in [pl.Float32, pl.Float64, pl.Int32, pl.Int64]
     ]
     if numerical_columns:
@@ -87,7 +86,6 @@ def preprocess_data(df: pl.DataFrame, target_column: str = None) -> pl.DataFrame
     df = df.with_columns(text_expr.alias("text_description"))
 
     return df
-
 
 def process_data(
     input_data: pl.DataFrame,

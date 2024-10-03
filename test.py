@@ -17,7 +17,7 @@ print(docs[0].page_content)
 
 """
 PARAMETERS = (
-    llm_model_name="meta-llama/Llama-2-7b-hf",
+    model_name="meta-llama/Llama-2-7b-hf",
     db_type="pinecone",
     embedding_type="openai",
     dataset_name="titanic-passenger-survival",

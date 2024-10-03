@@ -10,6 +10,9 @@ from langchain_openai import OpenAI
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 
 from src.configs import Parameters
+from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import pipeline
+from src.utils.device import get_device
 
 OPENAI_MODELS = ["gpt", "gpt-4"]
 
@@ -67,7 +70,9 @@ def get_llm(parameters: Parameters):
     """
     Get the LLM model
     """
-    if parameters.model_name.lower() in OPENAI_MODELS:
+    device = get_device()
+
+    if parameters.model_name.lower() in ["gpt", "gpt-4"]:
         return OpenAI(
             model=parameters.model_name,
             temperature=parameters.temperature,
@@ -83,7 +88,7 @@ def get_llm(parameters: Parameters):
         # Load the model and tokenizer
         model_id = "meta-llama/Llama-3.2-1B-Instruct"
         tokenizer = AutoTokenizer.from_pretrained(model_id)
-        model = AutoModelForCausalLM.from_pretrained(model_id)
+        model = AutoModelForCausalLM.from_pretrained(model_id).to(device)
 
         # Create a pipeline
         pipe = pipeline(
@@ -91,9 +96,10 @@ def get_llm(parameters: Parameters):
             model=model,
             tokenizer=tokenizer,
             max_new_tokens=parameters.max_tokens,
-            temperature=0.7,  # You can adjust this
-            top_p=0.95,  # You can adjust this
-            repetition_penalty=1.15,  # You can adjust this
+            temperature=parameters.temperature,
+            top_p=0.95,
+            repetition_penalty=1.15,
+            device=device,
         )
 
         # Create the HuggingFacePipeline instance

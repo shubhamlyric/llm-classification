@@ -37,6 +37,7 @@ def run(inputs, parameters, configs):
         prompt_template=create_prompt_template(parameters.dataset_name),
         parameters=parameters,
         agent=agent,
+        original_data=to_predict_data,
     )
 
     return {"predictions": predictions_df}
@@ -47,7 +48,7 @@ if __name__ == "__main__":
         model_name="hugging",
         db_type="faiss",
         embedding_type="sentence-transformers/paraphrase-MiniLM-L6-v2",
-        dataset_name="example",
+        dataset_name="Titanic Survival Passenger",
         target_column="Survived",
         temperature=0.8,
         max_tokens=8192,

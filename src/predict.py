@@ -37,6 +37,7 @@ def process_and_predict(
     prompt_template,
     parameters: Parameters,
     agent,
+    original_data: pl.DataFrame,
 ) -> pl.DataFrame:
     predictions = []
 
@@ -78,6 +79,8 @@ def process_and_predict(
 
     # Add the predictions as a new column to the original dataframe
     prediction_column = pl.Series(f"{parameters.target_column}_prediction", predictions)
-    result_df = new_data.with_columns(prediction_column)
+    result_df = pl.DataFrame(original_data).with_columns(prediction_column)
+    # result_df = result_df.drop(columns=['text_description'])
+    print("result_df", result_df)
 
     return result_df

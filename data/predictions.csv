@@ -1,0 +1,2 @@
+PassengerId,Pclass,Name,Sex,Age,SibSp,Parch,Ticket,Fare,Cabin,Embarked,Survived_prediction
+882,3,"Markun, Mr. Johann",male,33,0,0,349257,7.8958,,S,0

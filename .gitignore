@@ -3,5 +3,8 @@ __pycache__
 *.pyc
 .env
 *.sh
-*.csv
 *.parquet
+*.csv
+
+# But allow .csv files in the data/ directory
+!data/*.csv

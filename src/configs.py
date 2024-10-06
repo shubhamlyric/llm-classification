@@ -28,7 +28,7 @@ class Parameters(BaseModel):
     Parameters
     """
 
-    llm_model_name: str
+    model_name: str
     db_type: str
     embedding_type: str
     dataset_name: str
@@ -36,3 +36,4 @@ class Parameters(BaseModel):
     dataset_name: str
     temperature: float = 0.8
     max_tokens: int = 8192
+    num_similar_items: int = 5

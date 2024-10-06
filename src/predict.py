@@ -3,7 +3,10 @@
 from typing import List, Dict
 from collections import Counter
 import polars as pl
+import numpy as np
 from src.configs import Parameters
+import faiss
+from src.storage.faiss import FaissStorage
 
 
 def format_similar_items(similar_items: str) -> str:
@@ -11,26 +14,38 @@ def format_similar_items(similar_items: str) -> str:
     return similar_items
 
 
-def extract_target_values(similar_items: str, target_name: str) -> List[str]:
-    """Extract target values from the similar items string."""
+def extract_target_values(similar_items, target_column):
+    """Extract target values from similar items"""
     target_values = []
-    for item in similar_items.split("\n"):
-        if f"{target_name}=" in item:
-            target_values.append(item.split("{target_name}=")[1].strip())
+
+    for item in similar_items:
+        text = item["text"]
+        # Split the text into key-value pairs
+        pairs = text.split(", ")
+        for pair in pairs:
+            key, value = pair.split("=")
+            if key == target_column:
+                target_values.append(value)
+                break
+
     return target_values
 
 
 def process_and_predict(
-    new_data: pl.DataFrame, agent, prompt_template, parameters: Parameters
-) -> List[Dict]:
-    """Process the new data and make predictions using the agent."""
+    new_data: pl.DataFrame,
+    faiss_storage: FaissStorage,
+    prompt_template,
+    parameters: Parameters,
+    agent,
+) -> pl.DataFrame:
     predictions = []
 
     for row in new_data.iter_rows(named=True):
         input_text = row.get("text_description")
 
-        # Agent retrieves similar items
-        similar_items = agent.run(f"Find items similar to: {input_text}")
+        # Perform FAISS similarity search
+        k = parameters.num_similar_items
+        similar_items = faiss_storage.similarity_search(input_text, k)
 
         # Extract target values from similar items
         target_values = extract_target_values(similar_items, parameters.target_column)
@@ -39,29 +54,30 @@ def process_and_predict(
         vote_result = Counter(target_values).most_common(1)[0]
         most_common_target, vote_count = vote_result
 
-        # Format similar items information
-        similar_info = format_similar_items(similar_items)
+        # Format similar items for the prompt
+        formatted_similar_items = "\n".join([item["text"] for item in similar_items])
 
         # Construct the prompt
         prompt = prompt_template.format(
             input_features=input_text,
-            similar_items=similar_info,
+            similar_items=formatted_similar_items,
             most_common_target=most_common_target,
             vote_count=vote_count,
             total_votes=len(target_values),
         )
 
         # Get final prediction from the agent
-        prediction = agent.run(prompt).strip()
+        agent_prediction = agent.run(prompt).strip()
 
-        predictions.append(
-            {
-                "id": row.get("id", "Unknown"),
-                "most_common_target": most_common_target,
-                "vote_count": vote_count,
-                "total_votes": len(target_values),
-                f"{parameters.target_column}_prediction": prediction,
-            }
+        # Ensure the prediction is either 0 or 1
+        final_prediction = (
+            1 if agent_prediction.lower() in ["1", "true", "yes", "survived"] else 0
         )
 
-    return predictions
+        predictions.append(final_prediction)
+
+    # Add the predictions as a new column to the original dataframe
+    prediction_column = pl.Series(f"{parameters.target_column}_prediction", predictions)
+    result_df = new_data.with_columns(prediction_column)
+
+    return result_df

@@ -19,45 +19,48 @@ def run(inputs, parameters, configs):
         db_type=parameters.db_type,
         embedding_model=parameters.embedding_type,
     )
+
     llm = get_llm(parameters)
     agent = create_agent(vectorstore=vectorstore, llm=llm)
 
     # Process the new data
+    to_predict_data = inputs.get("to_predict")
     processed_new_data = preprocess_data(
-        df=inputs.get("features"),
-        target_column=parameters.target_column,
+        df=to_predict_data,
+        target_column=None,  # We don't have the target column for prediction data
     )
 
     # Make predictions on the processed new data
-    predictions = process_and_predict(
+    predictions_df = process_and_predict(
         new_data=processed_new_data,
-        agent=agent,
+        faiss_storage=vectorstore,
         prompt_template=create_prompt_template(parameters.dataset_name),
         parameters=parameters,
+        agent=agent,
     )
-
-    # Convert predictions to a Polars DataFrame
-    predictions_df = pl.DataFrame(predictions)
 
     return {"predictions": predictions_df}
 
 
 if __name__ == "__main__":
-    parameters = Parameters(
-        llm_model_name="gpt-4o-mini",
+    params = Parameters(
+        model_name="hugging",
         db_type="faiss",
-        embedding_type="huggingface",
-        dataset_name="titanic",
-        target_column="Embarked",
+        embedding_type="sentence-transformers/paraphrase-MiniLM-L6-v2",
+        dataset_name="example",
+        target_column="Survived",
         temperature=0.8,
         max_tokens=8192,
     )
 
-    inputs = {
-        "historic": pl.read_csv("data/train.csv"),
-        "features": pl.read_csv("data/test.csv"),
+    data = {
+        "historic": pl.read_csv("data/historic.csv").to_dict(),
+        "to_predict": pl.read_csv("data/to_predict_small.csv").to_dict(),
     }
-    outputs = run(inputs=inputs, parameters=parameters.dict(), configs={})
+    outputs = run(inputs=data, parameters=params.dict(), configs={})
 
     for key, value in outputs.items():
-        pl.write_csv(value, f"data/{key}.csv")
+        if isinstance(value, pl.DataFrame):
+            value.write_csv(f"data/{key}.csv")
+        else:
+            print(f"Warning: {key} is not a DataFrame. Skipping CSV write.")

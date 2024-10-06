@@ -45,7 +45,7 @@ def run(inputs, parameters, configs):
 
 if __name__ == "__main__":
     params = Parameters(
-        model_name="hugging",
+        llm_model_name="hugging",
         db_type="faiss",
         embedding_type="sentence-transformers/paraphrase-MiniLM-L6-v2",
         dataset_name="Titanic Survival Passenger",

@@ -72,15 +72,15 @@ def get_llm(parameters: Parameters):
     """
     device = get_device()
 
-    if parameters.model_name.lower() in ["gpt", "gpt-4"]:
+    if parameters.llm_model_name.lower() in ["gpt", "gpt-4"]:
         return OpenAI(
-            model=parameters.model_name,
+            model=parameters.llm_model_name,
             temperature=parameters.temperature,
             max_tokens=parameters.max_tokens,
         )
-    elif parameters.model_name.lower().startswith("claude"):
+    elif parameters.llm_model_name.lower().startswith("claude"):
         return AnthropicLLM(
-            model=parameters.model_name,
+            model=parameters.llm_model_name,
             temperature=parameters.temperature,
             max_tokens=parameters.max_tokens,
         )

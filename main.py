@@ -50,21 +50,21 @@ def run(inputs, parameters, configs):
 
 
 if __name__ == "__main__":
-    params = Parameters(
-        llm_model_name="hugging",
-        db_type="faiss",
-        embedding_type="sentence-transformers/paraphrase-MiniLM-L6-v2",
-        dataset_name="Titanic Survival Passenger",
-        target_column="Survived",
-        temperature=0.8,
-        max_tokens=8192,
-    )
+    params = {
+        "llm_model_name": "hugging",
+        "db_type": "faiss",
+        "embedding_type": "sentence-transformers/paraphrase-MiniLM-L6-v2",
+        "dataset_name": "Titanic Survival Passenger",
+        "target_column": "Survived",
+        "temperature": "0.8",
+        "max_tokens": "8192",
+    }
 
     data = {
         "historic": pl.read_csv("data/historic.csv"),
         "to_predict": pl.read_csv("data/to_predict_small.csv"),
     }
-    outputs = run(inputs=data, parameters=params.dict(), configs={})
+    outputs = run(inputs=data, parameters=params, configs={})
 
     for key, value in outputs.items():
         if isinstance(value, pl.DataFrame):

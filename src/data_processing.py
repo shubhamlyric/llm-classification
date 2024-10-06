@@ -21,8 +21,6 @@ def preprocess_data(df: pl.DataFrame, target_column: str = None) -> pl.DataFrame
     Returns:
         pl.DataFrame: Preprocessed DataFrame.
     """
-    if isinstance(df, dict):
-        df = pl.DataFrame(df)
 
     all_columns = df.columns
     feature_columns = (
@@ -103,7 +101,6 @@ def process_data(
     if configs is None:
         configs = {}
 
-    input_data = pl.DataFrame(input_data)
     total_rows = input_data.shape[0]
 
     chunk_size = configs.get("batch_size", 100)

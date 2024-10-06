@@ -106,7 +106,7 @@ def process_data(
     input_data = pl.DataFrame(input_data)
     total_rows = input_data.shape[0]
 
-    chunk_size = configs.get("batch_size", 60)
+    chunk_size = configs.get("batch_size", 100)
     processed_rows = 0
 
     # Initialize the storage and embedding model
@@ -117,7 +117,7 @@ def process_data(
     for chunk_start in range(0, total_rows, chunk_size):
         chunk_end = min(chunk_size, total_rows - chunk_start)
 
-        chunk_df = input_data.slice(chunk_start, chunk_end - chunk_start)
+        chunk_df = input_data.slice(chunk_start, chunk_end)
         processed_chunk = preprocess_data(chunk_df, target_column)
 
         # Store in db

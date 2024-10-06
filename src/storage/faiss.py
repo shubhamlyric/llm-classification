@@ -51,9 +51,3 @@ class FaissStorage(BaseStorage):
             formatted_results.append(formatted_item)
 
         return formatted_results
-
-    def get_embeddings(self, texts: List[str]):
-        """
-        Get embeddings for the texts
-        """
-        return self.embedding_function.embed_documents(texts)

@@ -3,9 +3,10 @@
 import polars as pl
 from src.configs import Parameters
 from src.data_processing import process_data, preprocess_data
-from src.agent import create_agent, get_llm
+from src.agent.base import BaseAgent
+from src.llm_tools import get_llm
 from src.predict import process_and_predict
-from src.prompt_template import create_prompt_template
+from src.prompt_template import generate_prompt_template
 
 
 def run(inputs, parameters, configs):
@@ -21,7 +22,12 @@ def run(inputs, parameters, configs):
     )
 
     llm = get_llm(parameters)
-    agent = create_agent(vectorstore=vectorstore, llm=llm)
+    agent = BaseAgent(
+        parameters=parameters,
+        vectorstore=vectorstore,
+        llm=llm,
+        prompt=generate_prompt_template(),
+    ).create_agent()
 
     # Process the new data
     to_predict_data = inputs.get("to_predict")
@@ -34,7 +40,7 @@ def run(inputs, parameters, configs):
     predictions_df = process_and_predict(
         new_data=processed_new_data,
         faiss_storage=vectorstore,
-        prompt_template=create_prompt_template(parameters.dataset_name),
+        prompt_template=generate_prompt_template(),
         parameters=parameters,
         agent=agent,
         original_data=to_predict_data,
@@ -55,8 +61,8 @@ if __name__ == "__main__":
     )
 
     data = {
-        "historic": pl.read_csv("data/historic.csv").to_dict(),
-        "to_predict": pl.read_csv("data/to_predict_small.csv").to_dict(),
+        "historic": pl.read_csv("data/historic.csv"),
+        "to_predict": pl.read_csv("data/to_predict_small.csv"),
     }
     outputs = run(inputs=data, parameters=params.dict(), configs={})
 

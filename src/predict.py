@@ -1,11 +1,8 @@
 """ This module contains the main prediction logic. """
 
-from typing import List, Dict
 from collections import Counter
 import polars as pl
-import numpy as np
 from src.configs import Parameters
-import faiss
 from src.storage.faiss import FaissStorage
 
 
@@ -39,6 +36,7 @@ def process_and_predict(
     agent,
     original_data: pl.DataFrame,
 ) -> pl.DataFrame:
+    """Process the new data and make predictions using the agent."""
     predictions = []
 
     for row in new_data.iter_rows(named=True):

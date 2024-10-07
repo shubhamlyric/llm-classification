@@ -2,7 +2,7 @@
 Global Configs
 """
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from pydantic_settings import BaseSettings
 
 
@@ -37,3 +37,13 @@ class Parameters(BaseModel):
     temperature: float = 0.8
     max_tokens: int = 8192
     num_similar_items: int = 5
+
+    @validator('llm_model_name')
+    def validate_model_name(cls, v):
+        if ':' not in v:
+            raise ValueError("model_name must be in the format 'provider:model'")
+        return v
+
+    model_config = {
+        'protected_namespaces': ()
+    }

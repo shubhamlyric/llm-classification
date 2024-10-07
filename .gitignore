@@ -8,3 +8,7 @@ __pycache__
 
 # But allow .csv files in the data/ directory
 !data/*.csv
+
+# anything starting with testing
+testing*
+.DS_Store

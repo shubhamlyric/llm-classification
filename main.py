@@ -57,10 +57,28 @@ def run(inputs, parameters, configs):
 
 
 if __name__ == "__main__":
+    # params = {
+    #     "llm_model_name": "huggingface:meta-llama/Llama-3.2-1B-Instruct,openai:gpt-4-mini,anthropic:claude-3-opus-20240229",
+    #     "db_type": "faiss",
+    #     "embedding_type": "sentence-transformers/paraphrase-MiniLM-L6-v2,openai:text-embedding-ada-002, anthropic:claude-2",
+    #     "dataset_name": "Titanic Survival Passenger",
+    #     "target_column": "Survived",
+    #     "temperature": "0.8",
+    #     "max_tokens": "8192",
+    # }
+    # params = {
+    #     "llm_model_name": "openai:gpt-4-mini,anthropic:claude-3-opus-20240229",
+    #     "db_type": "faiss",
+    #     "embedding_type": "openai:text-embedding-ada-002,anthropic:claude-2",
+    #     "dataset_name": "Titanic Survival Passenger",
+    #     "target_column": "Survived",
+    #     "temperature": "0.8",
+    #     "max_tokens": "8192",
+    # }
     params = {
-        "llm_model_name": "huggingface:meta-llama/Llama-3.2-1B-Instruct,openai:gpt-4-mini",
+        "llm_model_name": "huggingface:meta-llama/Llama-3.2-1B-Instruct,huggingface:TinyLlama/TinyLlama-1.1B-Chat-v1.0",
         "db_type": "faiss",
-        "embedding_type": "sentence-transformers/paraphrase-MiniLM-L6-v2,sentence-transformers/paraphrase-MiniLM-L6-v2",
+        "embedding_type": "sentence-transformers/paraphrase-MiniLM-L6-v2,sentence-transformers/all-MiniLM-L6-v2",
         "dataset_name": "Titanic Survival Passenger",
         "target_column": "Survived",
         "temperature": "0.8",

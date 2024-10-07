@@ -1,2 +1,2 @@
-PassengerId,Pclass,Name,Sex,Age,SibSp,Parch,Ticket,Fare,Cabin,Embarked,Survived_prediction
-882,3,"Markun, Mr. Johann",male,33,0,0,349257,7.8958,,S,0
+PassengerId,Pclass,Name,Sex,Age,SibSp,Parch,Ticket,Fare,Cabin,Embarked,prediction_huggingface:meta-llama/Llama-3.2-1B-Instruct,prediction_huggingface:TinyLlama/TinyLlama-1.1B-Chat-v1.0
+882,3,"Markun, Mr. Johann",male,33,0,0,349257,7.8958,,S,0,0

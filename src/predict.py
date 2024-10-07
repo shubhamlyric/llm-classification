@@ -83,3 +83,27 @@ def process_and_predict(
     print("result_df", result_df)
 
     return result_df
+
+
+def process_and_predict_multiple(new_data, faiss_storage, prompt_template, parameters, agents, original_data, model_names):
+    """Process and predict using multiple models"""
+    predictions = {}
+    
+    for agent, model_name in zip(agents, model_names):
+        model_predictions = []
+        for _, row in new_data.iterrows():
+            context = faiss_storage.similarity_search(row['text'], k=5)
+            context_str = "\n".join([doc.page_content for doc in context])
+            
+            prompt = prompt_template.format(context=context_str, question=row['text'])
+            response = agent.run(prompt)
+            model_predictions.append(response)
+        
+        predictions[f"prediction_{model_name}"] = model_predictions
+    
+    # Create a DataFrame with the original data and predictions
+    result_df = original_data.copy()
+    for model_name, preds in predictions.items():
+        result_df[model_name] = preds
+    
+    return result_df
